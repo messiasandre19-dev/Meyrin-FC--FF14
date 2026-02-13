@@ -405,7 +405,7 @@
         // Enregistrement du Service Worker (PWA)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                navigator.serviceWorker.register('/Meyrin-FC--FF14/service-worker.js')
                     .then((registration) => {
                         console.log('✅ Service Worker enregistré avec succès:', registration.scope);
                         

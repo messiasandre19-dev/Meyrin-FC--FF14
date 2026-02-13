@@ -1,12 +1,12 @@
 const CACHE_NAME = 'meyrin-ff14-v1.0';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/calendar_import.js',
-  '/meyrin_logo.png',
-  '/manifest.json'
+  '/Meyrin-FC--FF14/',
+  '/Meyrin-FC--FF14/index.html',
+  '/Meyrin-FC--FF14/styles.css',
+  '/Meyrin-FC--FF14/app.js',
+  '/Meyrin-FC--FF14/calendar_import.js',
+  '/Meyrin-FC--FF14/meyrin_logo.png',
+  '/Meyrin-FC--FF14/manifest.json'
 ];
 
 // Installation du Service Worker

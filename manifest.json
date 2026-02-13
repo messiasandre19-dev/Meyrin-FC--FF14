@@ -1,0 +1,50 @@
+{
+  "name": "Meyrin FF14 - Gestion d'Équipe",
+  "short_name": "Meyrin FF14",
+  "description": "Application de gestion d'équipe de football pour Meyrin FF14",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#FFD700",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "meyrin_logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "meyrin_logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["sports", "utilities"],
+  "lang": "fr-FR",
+  "dir": "ltr",
+  "shortcuts": [
+    {
+      "name": "Joueurs",
+      "short_name": "Joueurs",
+      "description": "Voir la liste des joueuses",
+      "url": "/?view=joueurs",
+      "icons": [{ "src": "meyrin_logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Matchs",
+      "short_name": "Matchs",
+      "description": "Gérer les matchs",
+      "url": "/?view=matchs",
+      "icons": [{ "src": "meyrin_logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Entraînements",
+      "short_name": "Entraînements",
+      "description": "Voir les entraînements",
+      "url": "/?view=entrainements",
+      "icons": [{ "src": "meyrin_logo.png", "sizes": "96x96" }]
+    }
+  ]
+}

@@ -7,7 +7,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#000000">
+    <meta name="description" content="Application de gestion d'équipe de football pour Meyrin FF14 - Gestion des joueuses, matchs, entraînements et tactiques">
     <title>Meyrin FF14</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icônes pour iOS -->
+    <link rel="apple-touch-icon" href="meyrin_logo.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="meyrin_logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="meyrin_logo.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="meyrin_logo.png">
+    
+    <!-- Icône pour Android/Chrome -->
+    <link rel="icon" type="image/png" href="meyrin_logo.png">
+    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -387,6 +401,63 @@
             // Reset l'input pour permettre de ré-importer le même fichier
             event.target.value = '';
         }
+
+        // Enregistrement du Service Worker (PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker enregistré avec succès:', registration.scope);
+                        
+                        // Vérifier les mises à jour
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Nouvelle version disponible
+                                    if (confirm('🔄 Une nouvelle version est disponible ! Voulez-vous recharger ?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('❌ Échec d\'enregistrement du Service Worker:', error);
+                    });
+            });
+
+            // Recharger quand un nouveau Service Worker prend le contrôle
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    window.location.reload();
+                    refreshing = true;
+                }
+            });
+        }
+
+        // Détection de l'installation de la PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Empêcher la mini-infobar par défaut
+            e.preventDefault();
+            // Stocker l'événement pour l'utiliser plus tard
+            deferredPrompt = e;
+            
+            // Afficher une notification personnalisée (optionnel)
+            console.log('💡 L\'application peut être installée !');
+            
+            // Vous pouvez créer un bouton personnalisé ici
+            // showInstallPromotion();
+        });
+
+        // Quand l'utilisateur installe l'app
+        window.addEventListener('appinstalled', () => {
+            console.log('🎉 Application installée avec succès !');
+            deferredPrompt = null;
+        });
     </script>
 </body>
 </html>

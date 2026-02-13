@@ -22,6 +22,9 @@
     <!-- Icône pour Android/Chrome -->
     <link rel="icon" type="image/png" href="meyrin_logo.png">
     
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -31,20 +34,95 @@
                 <img src="meyrin_logo.png" alt="Meyrin FF14 Logo" class="logo" onerror="this.style.display='none'">
                 Meyrin FF14
             </h1>
-            <nav>
-                <button class="nav-btn active" data-view="joueurs">Joueurs</button>
+            <nav id="main-nav" style="display: none;">
+                <button class="nav-btn" data-view="accueil">🏠 Accueil</button>
+                <button class="nav-btn" data-view="joueurs">Joueurs</button>
                 <button class="nav-btn" data-view="equipes">Équipes</button>
                 <button class="nav-btn" data-view="entrainements">Entraînements</button>
                 <button class="nav-btn" data-view="matchs">Matchs</button>
                 <button class="nav-btn" data-view="tactiques">Tactiques</button>
                 <button class="nav-btn" data-view="classement">Classement</button>
+                <button class="nav-btn" data-view="statistiques">📊 Statistiques</button>
                 <button class="nav-btn" data-view="performances">Performances</button>
                 <button class="nav-btn" data-view="sauvegarde">💾 Sauvegarde</button>
             </nav>
         </header>
 
         <main>
-            <section id="joueurs-view" class="view active">
+            <section id="accueil-view" class="view active">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h2 style="font-size: 32px; color: #FFD700; margin-bottom: 10px;">Bienvenue</h2>
+                    <p style="font-size: 18px; color: #666;">Choisissez une section pour commencer</p>
+                </div>
+
+                <!-- Prochains Matchs -->
+                <div style="max-width: 1200px; margin: 0 auto 40px auto; padding: 0 20px;">
+                    <h3 style="font-size: 24px; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        ⚽ Prochains matchs
+                    </h3>
+                    <div id="upcoming-matches-home" class="upcoming-matches-container">
+                        <p style="text-align: center; color: #999; padding: 30px;">Chargement des matchs...</p>
+                    </div>
+                </div>
+                
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="app.navigateToView('joueurs')">
+                        <div class="menu-icon">👥</div>
+                        <h3>Joueurs</h3>
+                        <p>Gérer les joueuses de l'équipe</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="app.navigateToView('equipes')">
+                        <div class="menu-icon">⚽</div>
+                        <h3>Équipes</h3>
+                        <p>Meyrin 1, Meyrin 2 et FF17</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="app.navigateToView('entrainements')">
+                        <div class="menu-icon">🏃</div>
+                        <h3>Entraînements</h3>
+                        <p>Planifier et suivre les présences</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="app.navigateToView('matchs')">
+                        <div class="menu-icon">🏆</div>
+                        <h3>Matchs</h3>
+                        <p>Calendrier et résultats</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="app.navigateToView('tactiques')">
+                        <div class="menu-icon">📋</div>
+                        <h3>Tactiques</h3>
+                        <p>Formations et stratégies</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="app.navigateToView('classement')">
+                        <div class="menu-icon">📊</div>
+                        <h3>Classement</h3>
+                        <p>Tableau du championnat</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="app.navigateToView('statistiques')">
+                        <div class="menu-icon">📈</div>
+                        <h3>Statistiques</h3>
+                        <p>Graphiques et analyses</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="app.navigateToView('performances')">
+                        <div class="menu-icon">⭐</div>
+                        <h3>Performances</h3>
+                        <p>Statistiques des joueuses</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="app.navigateToView('sauvegarde')">
+                        <div class="menu-icon">💾</div>
+                        <h3>Sauvegarde</h3>
+                        <p>Export & Import des données</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="joueurs-view" class="view">
                 <div class="view-header">
                     <h2>Gestion des Joueurs</h2>
                     <button class="btn-primary" onclick="openPlayerModal()">+ Ajouter un joueur</button>
@@ -88,6 +166,7 @@
                     <h2>Gestion des Matchs</h2>
                     <div>
                         <button class="btn-secondary" onclick="importChampionshipCalendar()" style="margin-right: 10px;">📅 Importer Calendrier</button>
+                        <button class="btn-secondary" onclick="app.autoAssignCoaches()" style="margin-right: 10px;">👨‍🏫 Rotation Coachs</button>
                         <button class="btn-primary" onclick="openMatchModal()">+ Ajouter un match</button>
                     </div>
                 </div>
@@ -127,6 +206,38 @@
                 <div id="standings-container"></div>
             </section>
 
+            <section id="statistiques-view" class="view">
+                <div class="view-header">
+                    <h2>📊 Statistiques & Graphiques</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <!-- Graphique résultats -->
+                    <div class="chart-card">
+                        <h3>Évolution des Résultats</h3>
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                    
+                    <!-- Graphique buts -->
+                    <div class="chart-card">
+                        <h3>Buts Marqués vs Encaissés</h3>
+                        <canvas id="goalsChart"></canvas>
+                    </div>
+                    
+                    <!-- Graphique meilleures buteuses -->
+                    <div class="chart-card">
+                        <h3>Top Buteuses</h3>
+                        <canvas id="scorersChart"></canvas>
+                    </div>
+                    
+                    <!-- Graphique présences -->
+                    <div class="chart-card">
+                        <h3>Taux de Présence aux Entraînements</h3>
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
             <section id="performances-view" class="view">
                 <div class="view-header">
                     <h2>Suivi des Performances</h2>
@@ -140,6 +251,32 @@
                 </div>
                 
                 <div style="max-width: 800px; margin: 0 auto;">
+                    <!-- Rapport PDF Section -->
+                    <div style="background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h3 style="color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            📄 Rapport PDF pour Réunions
+                        </h3>
+                        <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">
+                            Générez un rapport PDF complet avec les données des joueuses et leurs taux de présence aux entraînements. Idéal pour les réunions de coachs et le suivi d'équipe.
+                        </p>
+                        <button class="btn-primary" onclick="app.generateTeamReportPDF()" style="width: 100%; padding: 15px; font-size: 16px;">
+                            🖨️ Générer Rapport PDF
+                        </button>
+                    </div>
+
+                    <!-- Grille Présences PDF Section -->
+                    <div style="background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h3 style="color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            📅 Grille de Présences aux Entraînements
+                        </h3>
+                        <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">
+                            Générez une grille PDF avec toutes les joueuses et leurs présences à chaque entraînement. Format tableau avec dates en colonnes et joueuses en lignes.
+                        </p>
+                        <button class="btn-primary" onclick="app.generateAttendanceGridPDF()" style="width: 100%; padding: 15px; font-size: 16px;">
+                            📊 Générer Grille de Présences
+                        </button>
+                    </div>
+
                     <!-- Export Section -->
                     <div style="background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         <h3 style="color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
@@ -215,6 +352,10 @@
                 <div class="form-group">
                     <label>Téléphone</label>
                     <input type="tel" id="player-phone">
+                </div>
+                <div class="form-group">
+                    <label>📝 Notes des coachs</label>
+                    <textarea id="player-notes" rows="4" placeholder="Observations, points forts, axes d'amélioration, comportement..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" onclick="closePlayerModal()">Annuler</button>

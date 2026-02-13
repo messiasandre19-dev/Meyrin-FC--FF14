@@ -569,6 +569,7 @@ main {
     min-height: 600px;
     position: relative;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
 }
 
 .football-field::before {
@@ -583,28 +584,20 @@ main {
 }
 
 .field-section {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 15px 0;
-    position: relative;
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
-.field-section.goalkeeper {
-    justify-content: center;
-    padding: 30px 0;
-}
-
-.field-section.defense {
-    margin-top: 40px;
-}
-
-.field-section.midfield {
-    margin-top: 60px;
-}
-
+.field-section.goalkeeper,
+.field-section.defense,
+.field-section.midfield,
 .field-section.attack {
-    margin-top: 60px;
+    margin: 0;
+    padding: 0;
 }
 
 .position-slot {
@@ -616,15 +609,21 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: move;
     transition: all 0.3s;
-    position: relative;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    user-select: none;
+}
+
+.position-slot:active {
+    cursor: grabbing;
 }
 
 .position-slot:hover {
     background: rgba(255, 215, 0, 0.3);
     border-color: #FFD700;
-    transform: scale(1.05);
+    transform: translate(-50%, -50%) scale(1.05);
 }
 
 .position-slot.filled {
@@ -882,10 +881,236 @@ main {
 }
 
 /* ============================================
+   PAGE D'ACCUEIL - MENU PRINCIPAL
+   ============================================ */
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.menu-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.menu-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.3);
+    border-color: #FFD700;
+}
+
+.menu-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+    line-height: 1;
+}
+
+.menu-card h3 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.menu-card p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+/* ============================================
+   PROCHAINS MATCHS - PAGE D'ACCUEIL
+   ============================================ */
+
+.upcoming-matches-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.upcoming-match-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #FFD700;
+    transition: all 0.3s ease;
+}
+
+.upcoming-match-card:hover {
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.upcoming-match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.upcoming-match-team {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: white;
+}
+
+.upcoming-match-team.team1 {
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+}
+
+.upcoming-match-team.team2 {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+}
+
+.upcoming-match-date {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.upcoming-match-teams {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.upcoming-match-info {
+    display: flex;
+    justify-content: space-around;
+    font-size: 13px;
+    color: #666;
+}
+
+.upcoming-match-info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.upcoming-match-info-label {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+}
+
+.upcoming-match-info-value {
+    font-weight: 600;
+    color: #333;
+}
+
+/* ============================================
+   STATISTIQUES - GRAPHIQUES
+   ============================================ */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.chart-card h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #FFD700;
+    font-weight: 600;
+}
+
+.chart-card canvas {
+    max-height: 300px;
+}
+
+/* ============================================
    RESPONSIVE DESIGN - MOBILE OPTIMIZATIONS
    ============================================ */
 
 @media screen and (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .chart-card {
+        padding: 15px;
+    }
+    
+    .chart-card h3 {
+        font-size: 16px;
+    }
+    
+    .chart-card canvas {
+        max-height: 250px;
+    }
+    
+    .upcoming-matches-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .upcoming-match-card {
+        padding: 15px;
+    }
+    
+    .upcoming-match-teams {
+        font-size: 16px;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .menu-card {
+        padding: 25px 15px;
+    }
+    
+    .menu-icon {
+        font-size: 40px;
+        margin-bottom: 15px;
+    }
+    
+    .menu-card h3 {
+        font-size: 18px;
+    }
+    
+    .menu-card p {
+        font-size: 12px;
+    }
+    
     /* Header mobile */
     header {
         padding: 15px 20px;

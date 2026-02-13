@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <title>Meyrin FF14</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>
+                <img src="meyrin_logo.png" alt="Meyrin FF14 Logo" class="logo" onerror="this.style.display='none'">
+                Meyrin FF14
+            </h1>
+            <nav>
+                <button class="nav-btn active" data-view="joueurs">Joueurs</button>
+                <button class="nav-btn" data-view="equipes">Équipes</button>
+                <button class="nav-btn" data-view="entrainements">Entraînements</button>
+                <button class="nav-btn" data-view="matchs">Matchs</button>
+                <button class="nav-btn" data-view="tactiques">Tactiques</button>
+                <button class="nav-btn" data-view="classement">Classement</button>
+                <button class="nav-btn" data-view="performances">Performances</button>
+            </nav>
+        </header>
+
+        <main>
+            <section id="joueurs-view" class="view active">
+                <div class="view-header">
+                    <h2>Gestion des Joueurs</h2>
+                    <button class="btn-primary" onclick="openPlayerModal()">+ Ajouter un joueur</button>
+                </div>
+                <div class="players-grid" id="players-list"></div>
+            </section>
+
+            <section id="equipes-view" class="view">
+                <div class="view-header">
+                    <h2>Gestion des Équipes</h2>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                    <div class="team-card">
+                        <h3 style="color: #FFA500; margin-bottom: 20px;">⚽ Meyrin 1</h3>
+                        <div id="team1-list" class="team-players-list"></div>
+                    </div>
+                    <div class="team-card">
+                        <h3 style="color: #FFA500; margin-bottom: 20px;">⚽ Meyrin 2</h3>
+                        <div id="team2-list" class="team-players-list"></div>
+                    </div>
+                    <div class="team-card">
+                        <h3 style="color: #FFA500; margin-bottom: 20px;">⚽ FF17</h3>
+                        <div id="ff17-list" class="team-players-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="entrainements-view" class="view">
+                <div class="view-header">
+                    <h2>Gestion des Entraînements</h2>
+                    <div>
+                        <button class="btn-secondary" onclick="app.showAttendanceHistory()" style="margin-right: 10px;">📊 Historique des présences</button>
+                        <button class="btn-primary" onclick="openTrainingModal()">+ Planifier un entraînement</button>
+                    </div>
+                </div>
+                <div class="trainings-list" id="trainings-list"></div>
+            </section>
+
+            <section id="matchs-view" class="view">
+                <div class="view-header">
+                    <h2>Gestion des Matchs</h2>
+                    <div>
+                        <button class="btn-secondary" onclick="importChampionshipCalendar()" style="margin-right: 10px;">📅 Importer Calendrier</button>
+                        <button class="btn-primary" onclick="openMatchModal()">+ Ajouter un match</button>
+                    </div>
+                </div>
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-secondary filter-btn active" onclick="app.filterMatches('all')">Tous</button>
+                    <button class="btn-secondary filter-btn" onclick="app.filterMatches('team1')">Meyrin 1</button>
+                    <button class="btn-secondary filter-btn" onclick="app.filterMatches('team2')">Meyrin 2</button>
+                    <button class="btn-secondary filter-btn" onclick="app.filterMatches('ff17')">FF17</button>
+                </div>
+                <div class="matches-list" id="matches-list"></div>
+            </section>
+
+            <section id="performances-view" class="view">
+                <div class="view-header">
+                    <h2>Suivi des Performances</h2>
+                </div>
+                <div class="performances-container" id="performances-container"></div>
+            </section>
+
+            <section id="tactiques-view" class="view">
+                <div class="view-header">
+                    <h2>Tactiques et Stratégies</h2>
+                    <button class="btn-primary" onclick="openTacticModal()">+ Créer une tactique</button>
+                </div>
+                <div class="tactics-list" id="tactics-list"></div>
+            </section>
+
+            <section id="classement-view" class="view">
+                <div class="view-header">
+                    <h2>Classement du Championnat</h2>
+                    <button class="btn-primary" onclick="app.updateStandings()">🔄 Mettre à jour</button>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 10px;">Juniores Féminines FF-14 (9v9) - 1er Degré</h3>
+                    <p style="color: #666;">Tour Printemps - Groupe 1</p>
+                </div>
+                <div id="standings-container"></div>
+            </section>
+
+            <section id="performances-view" class="view">
+                <div class="view-header">
+                    <h2>Suivi des Performances</h2>
+                </div>
+                <div class="performances-container" id="performances-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="player-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePlayerModal()">&times;</span>
+            <h2 id="player-modal-title">Ajouter un joueur</h2>
+            <form id="player-form" onsubmit="savePlayer(event)">
+                <input type="hidden" id="player-id">
+                <div class="form-group">
+                    <label>Nom complet</label>
+                    <input type="text" id="player-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Position</label>
+                    <select id="player-position" required>
+                        <option value="">Sélectionner...</option>
+                        <option value="Gardien">Gardien</option>
+                        <option value="Défenseur">Défenseur</option>
+                        <option value="Milieu">Milieu</option>
+                        <option value="Attaquant">Attaquant</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Année de naissance</label>
+                    <input type="number" id="player-birthyear" min="1950" max="2020" required>
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="player-phone">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closePlayerModal()">Annuler</button>
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="training-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTrainingModal()">&times;</span>
+            <h2 id="training-modal-title">Planifier un entraînement</h2>
+            <form id="training-form" onsubmit="saveTraining(event)">
+                <input type="hidden" id="training-id">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="training-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Heure</label>
+                    <input type="time" id="training-time" required>
+                </div>
+                <div class="form-group">
+                    <label>Durée (minutes)</label>
+                    <input type="number" id="training-duration" min="15" step="15" value="90" required>
+                </div>
+                <div class="form-group">
+                    <label>Lieu</label>
+                    <input type="text" id="training-location" required>
+                </div>
+                <div class="form-group">
+                    <label>Objectifs</label>
+                    <textarea id="training-objectives" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeTrainingModal()">Annuler</button>
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="match-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMatchModal()">&times;</span>
+            <h2 id="match-modal-title">Ajouter un match</h2>
+            <form id="match-form" onsubmit="saveMatch(event)">
+                <input type="hidden" id="match-id">
+                <div class="form-group">
+                    <label>Équipe</label>
+                    <select id="match-team" required>
+                        <option value="">Sélectionner l'équipe...</option>
+                        <option value="team1">Meyrin 1</option>
+                        <option value="team2">Meyrin 2</option>
+                        <option value="ff17">FF17</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="match-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Heure</label>
+                    <input type="time" id="match-time" required>
+                </div>
+                <div class="form-group">
+                    <label>Adversaire</label>
+                    <input type="text" id="match-opponent" required>
+                </div>
+                <div class="form-group">
+                    <label>Lieu</label>
+                    <input type="text" id="match-location" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="match-type" required>
+                        <option value="Championnat">Championnat</option>
+                        <option value="Coupe">Coupe</option>
+                        <option value="Amical">Amical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Score (notre équipe)</label>
+                    <input type="number" id="match-score-home" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Score (adversaire)</label>
+                    <input type="number" id="match-score-away" min="0">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeMatchModal()">Annuler</button>
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="attendance-history-modal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeAttendanceHistoryModal()">&times;</span>
+            <h2>Historique des Présences</h2>
+            <div id="attendance-history-content"></div>
+        </div>
+    </div>
+
+    <div id="match-stats-modal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeMatchStatsModal()">&times;</span>
+            <h2 id="match-stats-title">Statistiques du match</h2>
+            <div id="match-stats-content"></div>
+        </div>
+    </div>
+
+    <div id="tactic-modal" class="modal">
+        <div class="modal-content modal-xlarge">
+            <span class="close" onclick="closeTacticModal()">&times;</span>
+            <h2 id="tactic-modal-title">Créer une tactique</h2>
+            <form id="tactic-form" onsubmit="saveTactic(event)">
+                <input type="hidden" id="tactic-id">
+                
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px;">
+                    <!-- Informations générales -->
+                    <div>
+                        <div class="form-group">
+                            <label>Nom de la tactique</label>
+                            <input type="text" id="tactic-name" placeholder="Ex: 3-3-2 Défensive" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Formation (Foot 9x9)</label>
+                            <select id="tactic-formation" required onchange="app.loadFormationTemplate(this.value)">
+                                <option value="">Sélectionner...</option>
+                                <option value="3-3-2">3-3-2 (Équilibrée)</option>
+                                <option value="3-2-3">3-2-3 (Offensive)</option>
+                                <option value="2-4-2">2-4-2 (Contrôle du milieu)</option>
+                                <option value="2-3-3">2-3-3 (Très offensive)</option>
+                                <option value="3-4-1">3-4-1 (Défensive)</option>
+                                <option value="4-2-2">4-2-2 (Défensive solide)</option>
+                                <option value="2-2-4">2-2-4 (Attaque totale)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes tactiques</label>
+                            <textarea id="tactic-notes" rows="4" placeholder="Instructions et remarques..."></textarea>
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <h4 style="margin-bottom: 10px; color: #333;">Liste des joueuses</h4>
+                            <div id="players-available-list" style="max-height: 300px; overflow-y: auto;">
+                                <!-- Liste générée dynamiquement -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Terrain de foot -->
+                    <div>
+                        <h3 style="margin-bottom: 15px; color: #333;">Positionnement sur le terrain</h3>
+                        <div id="football-field" class="football-field">
+                            <!-- Les positions seront générées dynamiquement -->
+                        </div>
+                        <p style="color: #666; font-size: 14px; margin-top: 10px; font-style: italic;">
+                            💡 Glissez-déposez les joueuses de la liste vers les positions sur le terrain
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="form-actions" style="margin-top: 30px;">
+                    <button type="button" class="btn-secondary" onclick="closeTacticModal()">Annuler</button>
+                    <button type="submit" class="btn-primary">Enregistrer la tactique</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="calendar_import.js"></script>
+</body>
+</html>

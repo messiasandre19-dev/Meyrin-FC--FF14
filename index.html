@@ -25,6 +25,7 @@
                 <button class="nav-btn" data-view="tactiques">Tactiques</button>
                 <button class="nav-btn" data-view="classement">Classement</button>
                 <button class="nav-btn" data-view="performances">Performances</button>
+                <button class="nav-btn" data-view="sauvegarde">💾 Sauvegarde</button>
             </nav>
         </header>
 
@@ -117,6 +118,58 @@
                     <h2>Suivi des Performances</h2>
                 </div>
                 <div class="performances-container" id="performances-container"></div>
+            </section>
+
+            <section id="sauvegarde-view" class="view">
+                <div class="view-header">
+                    <h2>💾 Sauvegarde & Restauration</h2>
+                </div>
+                
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <!-- Export Section -->
+                    <div style="background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h3 style="color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            📤 Exporter les données
+                        </h3>
+                        <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">
+                            Téléchargez une sauvegarde complète de toutes vos données (joueuses, matchs, entraînements, tactiques, classement).
+                            Vous pourrez ensuite l'importer sur un autre appareil ou la conserver comme backup.
+                        </p>
+                        <button class="btn-primary" onclick="app.exportAllData()" style="width: 100%; padding: 15px; font-size: 16px;">
+                            📥 Télécharger la sauvegarde
+                        </button>
+                    </div>
+
+                    <!-- Import Section -->
+                    <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h3 style="color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            📥 Importer les données
+                        </h3>
+                        <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">
+                            Restaurez vos données depuis un fichier de sauvegarde précédent.
+                        </p>
+                        <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                            <p style="color: #856404; font-weight: 500; margin: 0;">
+                                ⚠️ <strong>Attention :</strong> L'importation remplacera TOUTES vos données actuelles !
+                            </p>
+                        </div>
+                        <input type="file" id="import-file-input" accept=".json" style="display: none;" onchange="handleImportFile(event)">
+                        <button class="btn-secondary" onclick="document.getElementById('import-file-input').click()" style="width: 100%; padding: 15px; font-size: 16px;">
+                            📂 Choisir un fichier de sauvegarde
+                        </button>
+                    </div>
+
+                    <!-- Info Section -->
+                    <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; margin-top: 30px;">
+                        <h4 style="color: #333; margin-bottom: 10px;">💡 Comment ça marche ?</h4>
+                        <ul style="color: #666; line-height: 1.8; padding-left: 20px;">
+                            <li><strong>Sur PC :</strong> Exportez vos données et envoyez le fichier à votre téléphone (email, WhatsApp, etc.)</li>
+                            <li><strong>Sur téléphone :</strong> Téléchargez le fichier, puis importez-le via cette page</li>
+                            <li><strong>Backup régulier :</strong> Exportez vos données chaque semaine pour éviter toute perte</li>
+                            <li><strong>Format :</strong> Le fichier est au format JSON et peut être ouvert avec un éditeur de texte</li>
+                        </ul>
+                    </div>
+                </div>
             </section>
         </main>
     </div>
@@ -324,5 +377,16 @@
 
     <script src="app.js"></script>
     <script src="calendar_import.js"></script>
+    <script>
+        // Fonction pour gérer l'importation de fichier
+        function handleImportFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                app.importAllData(file);
+            }
+            // Reset l'input pour permettre de ré-importer le même fichier
+            event.target.value = '';
+        }
+    </script>
 </body>
 </html>

@@ -34,6 +34,99 @@ class FootballTeamManager {
         localStorage.setItem(key, JSON.stringify(data));
     }
 
+    // Export toutes les données en JSON
+    exportAllData() {
+        const exportData = {
+            version: '1.0',
+            exportDate: new Date().toISOString(),
+            data: {
+                players: this.players,
+                trainings: this.trainings,
+                matches: this.matches,
+                attendances: this.attendances,
+                matchStats: this.matchStats,
+                tactics: this.tactics,
+                standings: this.standings
+            }
+        };
+
+        const jsonString = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `meyrin-ff14-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        alert('✅ Sauvegarde téléchargée avec succès !');
+    }
+
+    // Import des données depuis un fichier JSON
+    importAllData(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const importData = JSON.parse(e.target.result);
+                
+                // Vérifier la structure
+                if (!importData.data) {
+                    alert('❌ Fichier invalide : structure incorrecte');
+                    return;
+                }
+
+                const confirmMessage = `🔄 Confirmer l'importation ?\n\n` +
+                    `📅 Date de sauvegarde : ${new Date(importData.exportDate).toLocaleDateString('fr-FR')}\n\n` +
+                    `Données à importer :\n` +
+                    `• ${importData.data.players?.length || 0} joueuses\n` +
+                    `• ${importData.data.matches?.length || 0} matchs\n` +
+                    `• ${importData.data.trainings?.length || 0} entraînements\n` +
+                    `• ${importData.data.tactics?.length || 0} tactiques\n\n` +
+                    `⚠️ Cela remplacera TOUTES vos données actuelles !`;
+
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+
+                // Importer les données
+                this.players = importData.data.players || [];
+                this.trainings = importData.data.trainings || [];
+                this.matches = importData.data.matches || [];
+                this.attendances = importData.data.attendances || {};
+                this.matchStats = importData.data.matchStats || {};
+                this.tactics = importData.data.tactics || [];
+                this.standings = importData.data.standings || this.getDefaultStandings();
+
+                // Sauvegarder dans localStorage
+                this.saveData('players', this.players);
+                this.saveData('trainings', this.trainings);
+                this.saveData('matches', this.matches);
+                this.saveData('attendances', this.attendances);
+                this.saveData('matchStats', this.matchStats);
+                this.saveData('tactics', this.tactics);
+                this.saveData('standings', this.standings);
+
+                // Rafraîchir l'affichage
+                this.renderPlayers();
+                this.renderTeams();
+                this.renderTrainings();
+                this.renderMatches();
+                this.renderTactics();
+                this.renderStandings();
+                this.renderPerformances();
+
+                alert('✅ Importation réussie ! Toutes vos données ont été restaurées.');
+                
+            } catch (error) {
+                console.error('Erreur d\'importation:', error);
+                alert('❌ Erreur lors de l\'importation : fichier corrompu ou format invalide');
+            }
+        };
+        reader.readAsText(file);
+    }
+
     setupNavigation() {
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
